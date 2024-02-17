@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control Panel</title>
+    <!-- <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(232, 236, 208, 1);
+            width: 35rem;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+            width: 100%;
+            display: flex;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 20px;
+            margin-right: 5px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        #run-button {
+            height: 50px;
+            width: 150px;
+            background: #333;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #stop-button {
+            height: 50px;
+            width: 150px;
+            background: #600000;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .disabled-btn {
+            background-color: #95a5a6 !important;
+            cursor: not-allowed !important;
+        }
+    </style> -->
+
+    <style>
+            body {
+        font-family: 'Arial', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #333;
+        margin: 0;
+    }
+
+    .container {
+        background-color: rgba(232, 236, 208, 1);
+        border-radius: 10px;
+        width: 400px;
+        padding: 25px;
+    }
+
+    .control-group {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 18px;
+        width: 100%;
+    }
+
+    input[type="number"] {
+        width: 60px;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    input[type="range"] {
+        width: 100%;
+        margin-left: 10px;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 10px;
+        background: linear-gradient(to right, #600000 0%, #600000 100%);
+        border-radius: 5px;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #600000;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    input[type="range"]:hover {
+        opacity: 1;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #600000;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+
+    #run-button,
+    #stop-button {
+        height: 40px;
+        width: 100px;
+        background-color: #333;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 18px;
+        margin-top: 10px;
+    }
+
+    #run-button:hover,
+    #stop-button:hover {
+        background-color: #444;
+    }
+
+    .disabled-btn {
+        background-color: #95a5a6 !important;
+        cursor: not-allowed !important;
+    }
+
+    .switch {
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .switch input {
+        display: none;
+    }
+
+    .slider.round {
+        border-radius: 34px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="control-group">
+            <label class="slider-label" for="speed">Speed:</label>
+            <input type="number" id="speed-number" min="1" max="1000" value="50" />
+        </div>
+
+        <div class="control-group">
+            <input type="range" id="speed" min="1" max="1000" value="50">
+        </div>
+
+        <div class="control-group">
+            <label for="direction">Direction:</label>
+            <label class="switch">
+                <input type="checkbox" id="direction-cw" checked>
+                CW
+            </label>
+
+            <label class="switch">
+                <input type="checkbox" id="direction-ccw">
+                CCW
+            </label>
+        </div>
+
+        <div class="control-group">
+            <label class="slider-label" for="revolutions">Revolutions:</label>
+            <input type="number" id="revolutions-number" min="1" max="100" value="5" />
+        </div>
+
+        <div class="control-group">
+            <input type="range" id="revolutions" min="1" max="100" value="5" />
+        </div>
+
+        <button id="run-button">Run</button>
+
+        <button id="stop-button">Stop</button>
+    </div>
+
+    <script>
+        const revolutionsSlider = document.getElementById('revolutions');
+        const revolutionsNumberInput = document.getElementById('revolutions-number');
+
+        revolutionsSlider.addEventListener('input', () => {
+            revolutionsNumberInput.value = revolutionsSlider.value;
+        });
+
+        revolutionsNumberInput.addEventListener('input', () => {
+            revolutionsSlider.value = revolutionsNumberInput.value;
+        });
+
+        const speedSlider = document.getElementById('speed');
+        const speedNumberInput = document.getElementById('speed-number');
+
+        speedSlider.addEventListener('input', () => {
+            speedNumberInput.value = speedSlider.value;
+        });
+
+        speedNumberInput.addEventListener('input', () => {
+            speedSlider.value = speedNumberInput.value;
+        });
+
+        const runButton = document.getElementById('run-button');
+
+        runButton.addEventListener('click', () => {
+            // Get values
+            const speed = speedSlider.value;
+            const directionCW = document.getElementById('direction-cw').checked;
+            const directionCCW = document.getElementById('direction-ccw').checked;
+            const revolutions = revolutionsSlider.value;
+
+            // Create a JS object
+            const motorSettings = {
+                speed: speed,
+                directionCW: directionCW,
+                directionCCW: directionCCW,
+                revolutions: revolutions
+            };
+
+            // Log the object
+            console.log(motorSettings);
+
+            // Disable the button and add a disabled style
+            runButton.disabled = true;
+            runButton.classList.add('disabled-btn');
+
+            // Make a POST request
+            fetch('/run', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(motorSettings)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Handle the response data
+                    console.log('Response:', data);
+                })
+                .catch(error => {
+                    // Handle errors
+                    console.error('Error:', error);
+                }).finally(() => {
+                    runButton.disabled = false;
+                    runButton.classList.remove('disabled-btn');
+                });
+        });
+
+        const stopButton = document.getElementById('stop-button');
+
+        stopButton.addEventListener('click', () => {
+            fetch('/stop', {
+                method: 'GET'
+            }).finally(() => {
+                runButton.disabled = false;
+                runButton.classList.remove('disabled-btn');
+            });
+        });
+    </script>
+</body>
+
+</html>

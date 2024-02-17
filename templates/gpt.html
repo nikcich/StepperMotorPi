@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control Panel</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        background: #333;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        background: #333;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      .switch input:checked:after {
+        transform: translateX(100%);
+        background-color: #600000;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900 h-screen flex justify-center items-center">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-1/2">
+      <h1 class="text-3xl font-semibold text-center mb-8">Control Panel</h1>
+      <div class="flex flex-col gap-4">
+        <div class="flex flex-col md:flex-row items-center gap-4">
+          <label for="speed" class="text-gray-700 font-medium md:w-1/4"
+            >Speed:</label
+          >
+          <div class="flex flex-col md:flex-row items-center gap-2">
+            <input
+              type="number"
+              id="speed-number"
+              min="1"
+              max="1000"
+              value="50"
+              class="border-2 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            <input
+              type="range"
+              id="speed"
+              min="1"
+              max="1000"
+              value="50"
+              class="flex-1 mx-2 border-2 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline slider"
+            />
+          </div>
+        </div>
+        <div class="flex flex-col md:flex-row items-center gap-4">
+          <label for="direction" class="text-gray-700 font-medium md:w-1/4"
+            >Direction:</label
+          >
+          <div class="flex items-center">
+            <label
+              for="direction-cw"
+              class="inline-flex items-center mr-4 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                id="direction-cw"
+                class="form-checkbox"
+                checked
+              />
+              <span class="ml-2">Clockwise (CW)</span>
+            </label>
+            <label
+              for="direction-ccw"
+              class="inline-flex items-center mr-4 cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                id="direction-ccw"
+                class="form-checkbox"
+              />
+              <span class="ml-2">Counter-Clockwise (CCW)</span>
+            </label>
+          </div>
+        </div>
+        <div class="flex flex-col md:flex-row items-center gap-4">
+            <label for="revolutions" class="text-gray-700 font-medium md:w-1/4"
+            >Revolutions:</label
+          >
+          <div class="flex flex-col md:flex-row items-center gap-2">
+            <input
+              type="number"
+              id="revolutions-number"
+              min="1"
+              max="100"
+              value="5"
+              class="border-2 rounded w-20 py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+            <input
+              type="range"
+              id="revolutions"
+              min="1"
+              max="100"
+              value="5"
+              class="flex-1 mx-2 border-2 rounded py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline slider"
+            />
+          </div>
+        </div>
+        <div class="flex justify-center items-center gap-4">
+          <button
+            id="run-button"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:shadow-outline-blue"
+          >
+            Run
+          </button>
+          <button
+            id="stop-button"
+            class="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:shadow-outline-red"
+          >
+            Stop
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        const revolutionsSlider = document.getElementById("revolutions");
+        const revolutionsNumberInput = document.getElementById(
+          "revolutions-number"
+        );
+  
+        revolutionsSlider.addEventListener("input", () => {
+          revolutionsNumberInput.value = revolutionsSlider.value;
+        });
+  
+        revolutionsNumberInput.addEventListener("input", () => {
+          revolutionsSlider.value = revolutionsNumberInput.value;
+        });
+  
+        const speedSlider = document.getElementById("speed");
+        const speedNumberInput = document.getElementById("speed-number");
+  
+        speedSlider.addEventListener("input", () => {
+          speedNumberInput.value = speedSlider.value;
+        });
+  
+        speedNumberInput.addEventListener("input", () => {
+          speedSlider.value = speedNumberInput.value;
+        });
+  
+        const runButton = document.getElementById("run-button");
+  
+        runButton.addEventListener("click", () => {
+          // Get values
+          const speed = speedSlider.value;
+          const directionCW = document.getElementById("direction-cw").checked;
+          const directionCCW = document.getElementById("direction-ccw").checked;
+          const revolutions = revolutionsSlider.value;
+  
+          // Create a JS object
+          const motorSettings = {
+            speed: speed,
+            directionCW: directionCW,
+            directionCCW: directionCCW,
+            revolutions: revolutions,
+          };
+  
+          // Log the object
+          console.log(motorSettings);
+  
+          // Disable the button and add a disabled style
+          runButton.disabled = true;
+          runButton.classList.add("cursor-not-allowed");
+          runButton.classList.add("opacity-50");
+  
+          // Make a POST request
+          fetch("/run", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(motorSettings),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              // Handle the response data
+              console.log("Response:", data);
+            })
+            .catch((error) => {
+              // Handle errors
+              console.error("Error:", error);
+            })
+            .finally(() => {
+              runButton.disabled = false;
+              runButton.classList.remove("cursor-not-allowed");
+              runButton.classList.remove("opacity-50");
+            });
+        });
+  
+        const stopButton = document.getElementById("stop-button");
+  
+        stopButton.addEventListener("click", () => {
+          fetch("/stop", {
+            method: "GET",
+          }).finally(() => {
+            runButton.disabled = false;
+            runButton.classList.remove("disabled-btn");
+          });
+        });
+      </script>
+  </body>
+</html>
